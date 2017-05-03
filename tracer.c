@@ -44,6 +44,9 @@ perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
 }
 
 
+uint64_t create_config(uint8_t event, uint8_t umask, uint8_t cmask) {
+    return uint64_t ( (cmask << 24) | (umask << 8) | (event) );
+}
 
 void start_perf_tracing()
 {
@@ -51,7 +54,8 @@ void start_perf_tracing()
     memset(&pe, 0, sizeof(struct perf_event_attr));
     pe.type = PERF_TYPE_RAW;
     pe.size = sizeof(struct perf_event_attr);
-    pe.config = 0x003C;
+// All unhalted core execution cycles
+    pe.config = create_config(0x3C, 0x00, 0);
     pe.disabled = 1;
     pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
@@ -67,7 +71,8 @@ void start_perf_tracing()
     memset(&pe, 0, sizeof(struct perf_event_attr));
     pe.type = PERF_TYPE_RAW;
     pe.size = sizeof(struct perf_event_attr);
-    pe.config = 0x108;
+// Load misses causes a page walk
+    pe.config = create_config(0x08, 0x01, 0);
     pe.disabled = 1;
     pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
@@ -78,7 +83,8 @@ void start_perf_tracing()
     memset(&pe, 0, sizeof(struct perf_event_attr));
     pe.type = PERF_TYPE_RAW;
     pe.size = sizeof(struct perf_event_attr);
-    pe.config = 0x1008;
+// Cycles in Page Walk
+    pe.config = create_config(0x08, 0x10, 1);
     pe.disabled = 1;
     pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
@@ -89,7 +95,8 @@ void start_perf_tracing()
     memset(&pe, 0, sizeof(struct perf_event_attr));
     pe.type = PERF_TYPE_RAW;
     pe.size = sizeof(struct perf_event_attr);
-    pe.config = 0x00C0;
+    // Total Instructions Retired
+    pe.config = create_config(0xC0, 0x00, 0);
     pe.disabled = 1;
     pe.exclude_kernel = 1;
     pe.exclude_hv = 1;
