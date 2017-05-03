@@ -45,7 +45,8 @@ perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
 
 
 uint64_t create_config(uint8_t event, uint8_t umask, uint8_t cmask) {
-    return uint64_t ( (cmask << 24) | (umask << 8) | (event) );
+    uint64_t config = ((cmask << 24) | (umask << 8) | (event));
+    return config;
 }
 
 void start_perf_tracing()
